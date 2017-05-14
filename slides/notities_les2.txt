@@ -1,0 +1,35 @@
+Exercises (bioinf db) slide 16
+
+• Give the accession number for the 3 longest human genes in the database
+• How many genes are in the database for species with a genome size of at least 3000
+• For the gene with accession number NM_008220, give
+• The length of the gene
+• The total genome size
+• Retrieve all genes comming from a genome that was published in the first half of the year
+• Retrieve all unique class names for model organisms with al least 10 chromosomes
+
+USE bioinf;
+SELECT * FROM gene ORDER BY len desc LIMIT 3;
+SELECT * FROM gene;
+·         Verbind met de modorg tabel. Ga hiervoor op zoek naar een kolom die in beide tabellen voorkomt. Deze heeft niet noodzakelijk dezelfde naam in beide tabellen.
+SELECT * FROM gene JOIN modorg ON gene.mo_id=modorg.id;
+·         Verbind met de class tabel. Hier moet je dus slechts met 1 van de 2 voorgaande tabllen verbinden. Op die manier zijn de 3 tabellen dat met elkaar verbonden.
+SELECT * FROM gene JOIN modorg ON gene.mo_id=modorg.id JOIN class ON modorg.class_id=class.id;
+·         Definieer nu welke kolommen je wil zien in je resultaat.
+SELECT name, genus, species, acc, len, descr FROM gene JOIN modorg ON gene.mo_id=modorg.id JOIN class ON modorg.class_id=class.id;+---------+--------+------------+--------------+------+--------------------------------------------------------------------+
+| name    | genus  | species    | acc          | len  | descr                                                              |
++---------+--------+------------+--------------+------+--------------------------------------------------------------------+
+| Mammals | Homo   | sapiens    | NM_000558    |  576 | Homo sapiens hemoglobin, alpha 1 (HBA1), mRNA                      |
+| Mammals | Homo   | sapiens    | NM_000517    |  622 | Homo sapiens hemoglobin, alpha 2 (HBA2), mRNA                      |
+| Mammals | Homo   | sapiens    | NM_000518    |  626 | Homo sapiens hemoglobin, beta (HBB), mRNA                          |
+| Mammals | Homo   | sapiens    | NM_000519    |  774 | Homo sapiens hemoglobin, delta (HBD), mRNA                         |
+| Mammals | Mus    | musculus   | NM_008220    |  626 | Mus musculus hemoglobin, beta adult major chain (Hbb-b1), mRNA     |
+| Mammals | Mus    | musculus   | NM_008221    |  619 | Mus musculus hemoglobin Y, beta-like embryonic chain (Hbb-y), mRNA |
+| Mammals | Mus    | musculus   | NM_008219    |  610 | Mus musculus hemoglobin Z, beta-like embryonic chain (Hbb-bh1)     |
+| Mammals | Rattus | norvegicus | NM_033234    |  620 | Rattus norvegicus hemoglobin, beta (Hbb), mRNA                     |
+| Mammals | Rattus | norvegicus | NM_001172845 |  589 | Rattus norvegicus hemoglobin, zeta (Hbz), mRNA                     |
++---------+--------+------------+--------------+------+--------------------------------------------------------------------+
+
+TO CONTINUE !
+
+

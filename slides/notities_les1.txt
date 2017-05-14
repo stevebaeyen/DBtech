@@ -1,0 +1,240 @@
+Installatie
+
+https://www.if-not-true-then-false.com/2010/install-mysql-on-fedora-centos-red-hat-rhel/
+
+Jasper Anckaert 
+
+CRUD 
+
+CREATE USER 'sbaeyen'@'localhost' IDENTIFIED BY 'Howest!2016';
+GRANT all ON biodb.* TO sbaeyen@localhost;
+als root:
+mysql -u root -p
+mysql> create database biodb;
+mysql> exit;
+cli:
+mysql -u sbaeyen -p biodb < /home/guest/Documents/databasetechnologie/db_files/1.sql
+mysql -u sbaeyen -p bioinf < /home/kali/Documenten/Databanktechnologie/db_files/2.sql
+mysql> SHOW databases;
+mysql> SHOW tables;
+
+mysql> SELECT genus, species FROM modorg;
+mysql> SELECT genus, species, draft FROM modorg ORDER BY draft;
+mysql> SELECT concat(genus, " ", species), year(draft) FROM modorg;
+mysql> SELECT concat(genus, " ", species) AS Organism, year(draft) FROM modorg;
+mysql> SELECT concat(genus, " ", species) AS Organism, year(draft) FROM modorg WHERE draft IS NOT NULL;
+mysql> SELECT * FROM modorg WHERE class="mammals" AND year(draft)> 2005;
+mysql> SELECT count(*) FROM modorg;
+mysql> SELECT count(DISTINCT class) FROM modorg;
+mysql> SELECT class, COUNT(*) FROM modorg GROUP BY class;
+mysql> SELECT class, COUNT(*) FROM modorg GROUP BY class HAVING class = "mammals";
+mysql> SELECT class, avg(nchr) AS avgchr FROM modorg GROUP BY class HAVING COUNT(class) > 1;
+mysql> SELECT class, avg(nchr) AS avgchr FROM modorg GROUP BY class HAVING COUNT(class) > 1 ORDER BY avgchr DESC;
+
+slide 52
+Exercices
+• Show
+• Model organism full name (as one column)
+• Genome size (as Gb), rounded to 4 digits
+• Average chromosome size
+• Publication year
+of all rows sorted by average chromosome size (largest on top)
+
+mysql> SELECT ROUND(gsize/1000,3) AS size_Gb, ROUND((gsize/nchr),3) AS avg_chr_size, concat(genus, " ", species) AS Organism, draft FROM modorg WHERE gsize IS NOT NULL ORDER BY avg_chr_size desc;
+
+slide 60
+
+• Select all mammals with genomes published after 2005
+• Select all organisms that have an average chromosome size between 10 and 100 Mbp
+• Select all organisms whose genus starts with A, B, C, D, or E
+
+SELECT * FROM modorg WHERE class="mammals" AND year(draft)> 2005;
++----+---------+---------+----------+------+-------+---------------------+
+| id | class   | genus   | species  | nchr | gsize | draft               |
++----+---------+---------+----------+------+-------+---------------------+
+|  6 | Mammals | Mus     | musculus |   21 |  2651 | 2010-09-23 00:00:00 |
+|  8 | Mammals | Gorilla | gorilla  |   24 |  3076 | 2008-11-03 00:00:00 |
+|  9 | Mammals | Homo    | sapiens  |   23 |  3038 | 2007-05-22 00:00:00 |
++----+---------+---------+----------+------+-------+---------------------+
+
+mysql> SELECT ROUND((gsize/nchr),3) AS avg_chr_size, concat(genus, " ", species) AS Organism FROM modorg WHERE (gsize/nchr) > 10 AND (gsize/nchr) <100;
++--------------+-------------------------+
+| avg_chr_size | Organism                |
++--------------+-------------------------+
+|       16.667 | Caenorhabditis elegans  |
+|       45.000 | Drosophila melanogester |
+|       13.625 | Apis melifera           |
++--------------+-------------------------+
+
+mysql> SELECT * FROM modorg WHERE genus REGEXP '^[A-E]';
++----+------------+----------------+--------------+------+-------+---------------------+
+| id | class      | genus          | species      | nchr | gsize | draft               |
++----+------------+----------------+--------------+------+-------+---------------------+
+|  1 | Bacteria   | Escherichia    | coli         |    1 | 4.639 | 1997-09-05 00:00:00 |
+|  3 | Roundworms | Caenorhabditis | elegans      |    6 |   100 | 1998-12-16 00:00:00 |
+|  4 | Insects    | Drosophila     | melanogester |    4 |   180 | 2000-03-25 00:00:00 |
+|  5 | Insects    | Apis           | melifera     |   16 |   218 | 2003-12-19 00:00:00 |
+| 10 | Aliens     | Alienus        | area51us     | NULL |  NULL | NULL                |
++----+------------+----------------+--------------+------+-------+---------------------+
+
+slide 63
+
+• Give an overview of all organism classes in the dataset (sorted alphabetically)
+• Show the organism names of the top 3 largest genome sizes
+
+SELECT DISTINCT class FROM modorg ORDER BY class asc;
++------------+
+| class      |
++------------+
+| Aliens     |
+| Bacteria   |
+| Fungi      |
+| Insects    |
+| Mammals    |
+| Roundworms |
++------------+
+mysql> SELECT gsize, concat(genus, " ", species) AS Organism FROM modorg ORDER BY gsize desc LIMIT 3;
++-------+-------------------+
+| gsize | Organism          |
++-------+-------------------+
+|  6597 | Rattus norvegicus |
+|  3076 | Gorilla gorilla   |
+|  3038 | Homo sapiens      |
++-------+-------------------+
+
+Slide 66
+
+• How many mammals are in the database?
+mysql> SELECT count(class) FROM modorg WHERE class = "Mammals";
++--------------+
+| count(class) |
++--------------+
+|            4 |
++--------------+
+
+Slide 68
+
+• How many organisms are present in the dataset for each class?
+Note the sort order.
+• Show the minimum and the maximum genome sizes for each class.
+Take only those organisms into account for which genome sizes are known.
+Sort the results such that the biggest maximum genome size is on top.
+
+
+mysql> SELECT DISTINCT(class), count(class) FROM modorg GROUP BY class;
++------------+--------------+
+| class      | count(class) |
++------------+--------------+
+| Aliens     |            1 |
+| Bacteria   |            1 |
+| Fungi      |            1 |
+| Insects    |            2 |
+| Mammals    |            4 |
+| Roundworms |            1 |
++------------+--------------+
+mysql> SELECT DISTINCT(class), count(class),min(gsize),max(gsize) FROM modorg WHERE gsize IS NOT NULL GROUP BY class ORDER BY max(gsize) desc;
++------------+--------------+------------+------------+
+| class      | count(class) | min(gsize) | max(gsize) |
++------------+--------------+------------+------------+
+| Mammals    |            4 |       2651 |       6597 |
+| Insects    |            2 |        180 |        218 |
+| Roundworms |            1 |        100 |        100 |
+| Bacteria   |            1 |      4.639 |      4.639 |
+| Fungi      |            1 |      0.672 |      0.672 |
++------------+--------------+------------+------------+
+
+Slide 72
+
+• For each class with more than 1 organism, show the average number of chromosomes.
+Sort the result such that the biggest average is on top.
+
+mysql> SELECT DISTINCT(class), avg(nchr) FROM modorg GROUP BY class HAVING count(class)>1 ORDER BY avg(nchr) desc;
++---------+-----------+
+| class   | avg(nchr) |
++---------+-----------+
+| Mammals |   22.2500 |
+| Insects |   10.0000 |
++---------+-----------+
+
+slide 73 db upgrade
+
+kali@kali-Akoya-E7226:~$ mysql -u root -p
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 6
+Server version: 5.7.18-0ubuntu0.16.04.1 (Ubuntu)
+
+Copyright (c) 2000, 2017, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> create database bioinf;
+Query OK, 1 row affected (0,03 sec)
+
+mysql> GRANT all ON bioinf.* TO sbaeyen@localhost;
+Query OK, 0 rows affected (0,01 sec)
+
+mysql> exit;
+Bye
+
+kali@kali-Akoya-E7226:~$ mysql -u sbaeyen -p bioinf < /home/kali/Documenten/Databanktechnologie/db_files/2.sql
+Enter password: 
+kali@kali-Akoya-E7226:~$ mysql -u sbaeyen -p
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 8
+Server version: 5.7.18-0ubuntu0.16.04.1 (Ubuntu)
+
+Copyright (c) 2000, 2017, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> SHOW databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| biodb              |
+| bioinf             |
++--------------------+
+3 rows in set (0,00 sec)
+
+mysql> use bioinf;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql> SHOW tables;
++------------------+
+| Tables_in_bioinf |
++------------------+
+| class            |
+| gene             |
+| modorg           |
++------------------+
+3 rows in set (0,00 sec)
+
+mysql> SELECT * FROM gene;
++----+-------+--------------+--------------------------------------------------------------------+------+
+| id | mo_id | acc          | descr                                                              | len  |
++----+-------+--------------+--------------------------------------------------------------------+------+
+|  1 |     9 | NM_000558    | Homo sapiens hemoglobin, alpha 1 (HBA1), mRNA                      |  576 |
+|  2 |     9 | NM_000517    | Homo sapiens hemoglobin, alpha 2 (HBA2), mRNA                      |  622 |
+|  3 |     9 | NM_000518    | Homo sapiens hemoglobin, beta (HBB), mRNA                          |  626 |
+|  4 |     9 | NM_000519    | Homo sapiens hemoglobin, delta (HBD), mRNA                         |  774 |
+|  5 |     6 | NM_008220    | Mus musculus hemoglobin, beta adult major chain (Hbb-b1), mRNA     |  626 |
+|  6 |     6 | NM_008221    | Mus musculus hemoglobin Y, beta-like embryonic chain (Hbb-y), mRNA |  619 |
+|  7 |     6 | NM_008219    | Mus musculus hemoglobin Z, beta-like embryonic chain (Hbb-bh1)     |  610 |
+|  8 |     7 | NM_033234    | Rattus norvegicus hemoglobin, beta (Hbb), mRNA                     |  620 |
+|  9 |     7 | NM_001172845 | Rattus norvegicus hemoglobin, zeta (Hbz), mRNA                     |  589 |
++----+-------+--------------+--------------------------------------------------------------------+------+
+
+

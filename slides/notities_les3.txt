@@ -1,0 +1,43 @@
+no sql 
+column store
+je hangt niet vast aan een struktuur, bvb. cassandra(fb) -> elke rij kan verschillend aantal kolommen hebben
+key value store
+verschillende  velden, bvb. Oracle
+graph store
+bvb. OrientDB: nodes, edges and properties -> op zoek naar kortste pad tusen 2 knopen
+specifile taal: SPARSQL
+Multi model 
+verschillende types sql, maar op een manier gevraagd bvb. Couchbase
+
+Document store (belangrijkste) -> semi gestruktureerde data, data hoeft niet overal hetzelfde zijn (sterkere vorm als key value store), vooral voor webapplicaties. Elk doc, record wordt gekenmerkt door een unieke key. Bekendste : MongoDB
+groot voordeel: normalisatie niet nodig 
+
+kali@kali-Akoya-E7226:~/Documenten/mongodb/mongodb-linux-x86_64-3.0.4/bin$ mongo
+MongoDB shell version: 3.0.4
+connecting to: test
+Slide 39
+
+mongo1.txt als db.insert plakken in testDB
+> show dbs
+admin  (empty)
+local  0.078GB
+test   (empty)
+> use test
+switched to db test
+> show collections
+db.users.find({status: 'A'}, {type:1})
+db.users.find({status: 'A'}, {type:1})
+
+db.users.updateMany( {"favorites.artist": "Picasso"}, { $set: { " favorrites.artist": "Pisanello", type: 3})
+
+http://rest.ensembl.org/sequence/id/ENSG00000141510
+vb voor REST API
+
+herhaal git: https://try.github.io/levels/1/challenges/1
+
+
+
+
+
+
+
