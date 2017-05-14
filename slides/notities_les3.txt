@@ -45,6 +45,28 @@ db.users.update( {"favorites.artist": "Picasso"}, { $set: { " favorrites.artist"
 http://rest.ensembl.org/sequence/id/ENSG00000141510
 vb voor REST API
 
+oefeningen slide 91
+• Return the archived sequence with Ensembl id ENSG00000141510
+• Return the archived sequence for both ENSG00000012048 and ENSG00000136997
+• Return a condensed XML-list of all orthologues in Mus musculus for ENSG00000159763
+• Do the same for BRCA2
+HINTS:
+type=orthologues
+target_taxon=<taxon_id>
+format=condensed
+• Retrieve the genomic FASTA sequence for ENST00000288602.10
+• Get a sequence from 100 nucleotides located on human chromosome 2 starting at
+position 100000
+• Show the taxonomy information of the mouse
+• Find the species and the database for ENSMUSG00000059552
+• Return the length of following chromosomes in human and mouse
+• 2
+• 7
+• X
+• Which are the longest?
+
+
+
 herhaal git: https://try.github.io/levels/1/challenges/1
 
 
