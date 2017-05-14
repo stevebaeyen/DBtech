@@ -25,15 +25,29 @@ test   (empty)
 > use test
 switched to db test
 > show collections
-db.users.find({status: 'A'}, {type:1})
-db.users.find({status: 'A'}, {type:1})
+db.users.find()
+db.users.find({status: 'A'},{$or:[{age: {$lt:30}}, {type: {$eq:1}}]})
+db.collection.find( { badges: black}, { "badges.$": 1 } )
+db.users.find({ badges: { $elemMatch: {$and:[{elem: {$gt:15}},{elem: {$lt:20}} } } }
 
-db.users.updateMany( {"favorites.artist": "Picasso"}, { $set: { " favorrites.artist": "Pisanello", type: 3})
+oefeningen aggregate slide 47
+• Return average city population by state
+• Return largest and smallest cities by state
+
+mongoimport --db test --collection zips --file /home/kali/Documenten/Databanktechnologie/db_fileszips.json
+
+db.zips.find().limit(3)
+db.zips.aggregate({ $group: { _id: "$state", avg_pop: { $avg: "$pop" } } })
+
+
+db.users.update( {"favorites.artist": "Picasso"}, { $set: { " favorrites.artist": "Pisanello", type: 3})
 
 http://rest.ensembl.org/sequence/id/ENSG00000141510
 vb voor REST API
 
 herhaal git: https://try.github.io/levels/1/challenges/1
+
+
 
 
 
